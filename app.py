@@ -53,7 +53,7 @@ Job Description:
 
         with st.spinner("Generating..."):
             response = client.chat.completions.create(
-                model="openai/gpt-4o-mini",
+                model="openai/free",
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
