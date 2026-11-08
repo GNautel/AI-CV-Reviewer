@@ -25,6 +25,10 @@ output_type = st.selectbox(
     ["CV summary", "Skill gap analysis", "Improved bullet points", "Cover letter paragraph"]
 )
 
+temp= st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.3, step=0.1)
+
+max_t= st.slider("Max tokens", min_value=100, max_value=1000, value=500, step=50)
+
 if st.button("Generate"):
     if not cv_text or not job_text:
         st.warning("Please paste both CV and job description.")
@@ -57,8 +61,8 @@ Job Description:
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
-                max_tokens=300
+                temperature = temp,
+                max_tokens = max_t
             )
 
         st.subheader("AI Output")
