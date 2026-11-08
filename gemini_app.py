@@ -1,0 +1,66 @@
+import streamlit as st
+from google import genai
+
+st.set_page_config(page_title="CV Tailor AI", page_icon="📄")
+
+st.title("📄 CV Tailor AI")
+st.write("Paste your CV and a job description. The app will generate a tailored CV summary, skill match, and improved bullet points.")
+
+client = genai.Client(api_key=st.secrets["Gemini_Api_Key"])
+
+cv_text = st.text_area("Paste your CV here", height=250)
+
+job_text = st.text_area("Paste the job description here", height=250)
+
+tone = st.selectbox(
+    "Choose tone",
+    ["Professional", "Confident", "Simple", "Formal"]
+)
+
+output_type = st.selectbox(
+    "Choose output",
+    ["CV summary", "Skill gap analysis", "Improved bullet points", "Cover letter paragraph"]
+)
+
+temp= st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.3, step=0.1)
+
+max_t= st.slider("Max tokens", min_value=100, max_value=1000, value=500, step=50)
+
+if st.button("Generate"):
+    if not cv_text or not job_text:
+        st.warning("Please paste both CV and job description.")
+    else:
+        prompt = f"""
+You are a professional career advisor.
+
+Task:
+Create a {output_type} based on the CV and job description.
+
+Tone:
+{tone}
+
+Rules:
+Be honest.
+Do not invent experience.
+Use keywords from the job description naturally.
+Make the output clear and useful for a student applying for a job.
+
+CV:
+{cv_text}
+
+Job Description:
+{job_text}
+"""
+
+        with st.spinner("Generating..."):
+            interaction = client.interactions.create(
+                model="gemini-3.8-flash",
+                input=prompt,
+                generation_config={
+                    "temperature": temp,
+                    "max_output_tokens": max_t
+                }
+            )
+
+        st.subheader("AI Output")
+        st.write(interaction.output_text)
